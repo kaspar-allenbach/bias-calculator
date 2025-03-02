@@ -18,6 +18,3 @@ yarn-error.log*
 
 # MacOS specific files
 .DS_Store
-
-# GitHub Actions
-.github/workflows/deploy.yml

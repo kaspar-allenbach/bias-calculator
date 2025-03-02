@@ -1,5 +1,5 @@
 module.exports = {
-  publicPath: process.env.NODE_ENV === 'production' ? '/my-vue-app/' : '/',
+  publicPath: process.env.NODE_ENV === 'production',
   outputDir: 'dist',
   assetsDir: 'assets',
   lintOnSave: false,
