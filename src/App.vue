@@ -1,3 +1,4 @@
+<!-- filepath: /workspaces/bias-calculator/src/App.vue -->
 <template>
   <div id="app">
     <router-view />

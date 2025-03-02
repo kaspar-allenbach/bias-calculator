@@ -1,3 +1,4 @@
+// filepath: /workspaces/bias-calculator/src/router.js
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from './views/Home.vue';
 
