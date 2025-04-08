@@ -1,125 +1,113 @@
 <template>
   <div class="ahp-calculator p-4">
-    <!-- ======================
+    <div class="input">
+      <!-- ======================
          AHP Input Table
          ====================== -->
-    <div class="inputTable">
-      <table class="AHP-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Prioritäten</th>
-            <th>Um wieviel mehr?</th>
-            <th>Priorität</th>
-            <th>Rang</th>
-            <th>+</th>
-            <th>-</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(row, index) in rows" :key="row.id">
-            <td>{{ index + 1 }}</td>
-            <td>
-              <input
-                type="text"
-                v-model="row.name"
-                :placeholder="`Priorität ${row.id}`"
-                class="text-input"
-              />
-            </td>
-            <td>
-              <!-- Render radio buttons from our available options -->
-              <template v-for="option in ratingOptions" :key="option">
-                <input
-                  type="radio"
-                  :id="`prio_${row.id}_${option}`"
-                  :name="`prio_${row.id}`"
-                  :value="option"
-                  v-model.number="row.rating"
-                />
-                <label :for="`prio_${row.id}_${option}`">{{ option }}</label>
-              </template>
-            </td>
-            <!-- Priority % -->
-            <td>{{ computedPriorities[index].toFixed(1) }} %</td>
-            <!-- Rank with background color for #1 -->
-            <td :style="{ backgroundColor: getRankColor(rowRanks[row.id]) }">
-              {{ rowRanks[row.id] }}
-            </td>
-            <!-- “Plus” & “Minus” columns -->
-            <td>{{ (computedPriorities[index] - minPriority).toFixed(1) }} %</td>
-            <td>{{ (maxPriority - computedPriorities[index]).toFixed(1) }} %</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="inputTable">
+        <h3>Bias Table</h3>
+        <table class="AHP-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Prioritäten</th>
+              <th>Um wieviel mehr?</th>
+              <th>Priorität</th>
+              <th>Rang</th>
+              <th>+</th>
+              <th>-</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(row, index) in rows" :key="row.id">
+              <td>{{ index + 1 }}</td>
+              <td>
+                <input type="text" v-model="row.name" :placeholder="`Priorität ${row.id} (Schreib was rein)`"
+                  class="text-input" />
+              </td>
+              <td>
+                <!-- Render radio buttons from our available options -->
+                <template v-for="option in ratingOptions" :key="option">
+                  <input type="radio" :id="`prio_${row.id}_${option}`" :name="`prio_${row.id}`" :value="option"
+                    v-model.number="row.rating" />
+                  <label :for="`prio_${row.id}_${option}`">{{ option }}</label>
+                </template>
+              </td>
+              <!-- Priority % -->
+              <td>{{ computedPriorities[index].toFixed(1) }} %</td>
+              <!-- Rank with background color for #1 -->
+              <td :style="{ backgroundColor: getRankColor(rowRanks[row.id]) }">
+                {{ rowRanks[row.id] }}
+              </td>
+              <!-- “Plus” & “Minus” columns -->
+              <td>{{ (computedPriorities[index] - minPriority).toFixed(1) }} %</td>
+              <td>{{ (maxPriority - computedPriorities[index]).toFixed(1) }} %</td>
+            </tr>
+          </tbody>
+        </table>
 
-      <!-- Buttons -->
-      <div class="button-group my-4">
-        <button @click="addRow" class="btn">+ Add Row</button>
-        <button @click="addCriteria" class="btn">+ Add Criteria</button>
-        <button @click="addIncrement" class="btn">+ Add Increment</button>
+        <!-- Buttons -->
+        <div class="button-group my-4">
+          <button @click="addRow" class="btn">+ Zeile Hinzufügen</button>
+          <button @click="addIncrement" class="btn">+ Skala Hinzufügen</button>
+        </div>
       </div>
-    </div>
 
-    <!-- ======================
+      <!-- ======================
          Dynamic AHP Skala
          ====================== -->
-    <div class="legend my-4">
-      <h2>AHP Skala</h2>
-      <ul>
-        <li v-for="option in ratingOptions" :key="option">
-          <strong>{{ option }}</strong> - {{ ratingDescriptions[option] || 'No Description' }}
-        </li>
-      </ul>
+      <div class="legend my-4">
+        <h2>AHP Skala</h2>
+        <ul>
+          <li v-for="option in ratingOptions" :key="option">
+            <strong>{{ option }}</strong> - {{ ratingDescriptions[option] || 'No Description' }}
+          </li>
+        </ul>
+      </div>
     </div>
-
-    <!-- ======================
+    <div class="output">
+      <!-- ======================
          Decision Matrix
          ====================== -->
-    <div class="decisionMatrix my-4">
-      <h3>Decision Matrix (Pairwise Ratios)</h3>
-      <table class="matrix-table">
-        <thead>
-          <tr>
-            <th></th>
-            <th v-for="(colRow, colIndex) in rows" :key="colRow.id">
-              {{ colRow.name.trim() !== '' ? colRow.name : `C${colRow.id}` }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(r, rowIndex) in rows" :key="r.id">
-            <!-- Row header -->
-            <th>{{ r.name.trim() !== '' ? r.name : `C${r.id}` }}</th>
-            <!-- Matrix cells -->
-            <td
-              v-for="(c, colIndex) in rows"
-              :key="c.id"
-              :style="{
+      <div class="decisionMatrix my-4">
+        <h3>Entscheidungsmatrix (Pairwise Ratios)</h3>
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th v-for="(colRow, colIndex) in rows" :key="colRow.id">
+                {{ colRow.name.trim() !== '' ? colRow.name : `C${colRow.id}` }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(r, rowIndex) in rows" :key="r.id">
+              <!-- Row header -->
+              <th>{{ r.name.trim() !== '' ? r.name : `C${r.id}` }}</th>
+              <!-- Matrix cells -->
+              <td v-for="(c, colIndex) in rows" :key="c.id" :style="{
                 backgroundColor: rowIndex === colIndex ? '#e8f1fa' : 'white',
                 color: rowIndex !== colIndex ? 'green' : 'black',
-              }"
-            >
-              {{ matrix[rowIndex][colIndex].toFixed(2) }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+              }">
+                {{ matrix[rowIndex][colIndex].toFixed(2) }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-    <!-- ======================
+      <!-- ======================
          Highcharts Chart
          ====================== -->
-    <div class="ouputDecisionMatrix my-4">
-      <div ref="chartContainer" class="chart-container"></div>
+      <div class="ouputDecisionChart my-4">
+        <h3>Entscheidungs Prioritäten</h3>
+        <div ref="chartContainer" class="chart-container"></div>
+      </div>
+      <div class="outputButtons">
+        <button>Export .xls</button>
+        <button>Export .csv</button>
+      </div>
     </div>
-
-    <div class="outputChart my-4">
-      <h3>Live Decision Matrix</h3>
-      <!-- You could replicate or display a more advanced matrix here if you like -->
-    </div>
-
-    <hr />
   </div>
 </template>
 
@@ -237,10 +225,6 @@ const addRow = () => {
   rows.value.push({ id: nextId, name: '', rating: 3 })
   nextId++
 }
-const addCriteria = () => {
-  console.log('Add Criteria button clicked')
-  // Insert logic to expand row objects or matrix columns if needed
-}
 const addIncrement = () => {
   const lastOption = ratingOptions.value[ratingOptions.value.length - 1]
   ratingOptions.value.push(lastOption + 1)
@@ -272,11 +256,31 @@ const drawChart = () => {
   if (!chart) {
     chart = Highcharts.chart(chartContainer.value, {
       chart: { type: 'column' },
-      title: { text: 'AHP Decision Priorities' },
-      xAxis: { categories },
+      title: { text: null },
+      legend: {
+        enabled: false,
+      },
+      credits: {
+        enabled: false,
+      },
+      xAxis: {
+        categories, labels: {
+          y: -10,
+          style: {
+            fontSize: "14px",
+          },
+        },
+      },
       yAxis: {
         min: 0,
         title: { text: 'Priority (%)' },
+        labels: {
+          align: "inside",
+          x: 20,
+          style: {
+            fontSize: "14px",
+          },
+        },
       },
       plotOptions: {
         column: {
@@ -323,12 +327,14 @@ watchEffect(() => {
   width: 100%;
   border-collapse: collapse;
 }
+
 .AHP-table th,
 .AHP-table td {
   border: 1px solid #ccc;
   padding: 0.5rem;
   text-align: center;
 }
+
 .text-input {
   width: 100%;
   padding: 0.25rem;
@@ -339,7 +345,9 @@ watchEffect(() => {
   width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
+  height: 100%;
 }
+
 .matrix-table th,
 .matrix-table td {
   border: 1px solid #ccc;
@@ -358,6 +366,13 @@ watchEffect(() => {
   cursor: pointer;
 }
 
+.legend {
+  ul {
+    list-style-type: none;
+    text-align: left;
+  }
+}
+
 /* Chart container */
 .chart-container {
   width: 100%;
@@ -365,4 +380,18 @@ watchEffect(() => {
 }
 
 /* Optional styling for the #1 rank cell colors, etc. */
+.ahp-calculator {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-gap: 20px;
+}
+
+.input {
+  grid-column: span 6;
+}
+
+.output {
+  grid-column: span 6;
+  min-height: 100vh;
+}
 </style>
