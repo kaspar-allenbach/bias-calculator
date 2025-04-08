@@ -106,6 +106,8 @@
       <div class="outputButtons">
         <button>Export .xls</button>
         <button>Export .csv</button>
+        <button>Export Chart .svg</button>
+        <button>Export Chart .png</button>
       </div>
     </div>
   </div>
