@@ -24,8 +24,11 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Verify dist folder
+        run: ls -alh ./dist  # This will list the contents of the dist folder to check if it exists
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           publish_dir: ./dist
