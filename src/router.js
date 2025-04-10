@@ -4,14 +4,14 @@ import Home from './views/Home.vue';
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
-  }
+    component: Home,
+  },
+  // Add more routes as needed
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes
+  history: createWebHistory('/bias-calculator/'),  // Correct base path for GitHub Pages
+  routes,
 });
 
 export default router;
